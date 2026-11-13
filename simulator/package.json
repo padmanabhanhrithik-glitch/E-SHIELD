@@ -1,0 +1,13 @@
+{
+  "name": "eshield-simulator",
+  "version": "1.0.0",
+  "description": "Standalone CLI simulator that posts fake ESP32 telemetry to the E-SHIELD backend over HTTP, so the full app can be exercised without hardware. Never used by production code paths.",
+  "main": "simulate.js",
+  "scripts": {
+    "start": "node simulate.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "node-fetch": "^2.7.0"
+  }
+}

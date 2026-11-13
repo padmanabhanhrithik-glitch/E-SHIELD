@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "E-SHIELD",
+    "slug": "eshield",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F7F9FC",
+    "icon": "./public/icon.png",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.eshield.app",
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"]
+      }
+    },
+    "android": {
+      "package": "com.eshield.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./public/icon.png",
+        "backgroundColor": "#172033"
+      },
+      "permissions": ["NOTIFICATIONS"]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "backgroundColor": "#F7F9FC",
+      "name": "E-SHIELD",
+      "shortName": "E-SHIELD",
+      "themeColor": "#172033"
+    },
+    "plugins": [
+      ["expo-splash-screen", { "image": "./public/splash.png", "resizeMode": "contain", "backgroundColor": "#F7F9FC" }],
+      "expo-notifications"
+    ],
+    "extra": {
+      "eas": {}
+    }
+  }
+}

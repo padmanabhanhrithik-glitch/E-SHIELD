@@ -1,0 +1,110 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Per-user profile & settings
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      match /settings/{settingId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /fcmTokens/{tokenId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // Homes/locations/devices/loads: any signed-in user of this deployment
+    // may read (single-household assumption for the reference app).
+    // For a multi-tenant deployment, add an `ownerId` field to each home and
+    // scope these rules to `request.auth.uid == resource.data.ownerId`.
+    match /homes/{homeId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    match /locations/{locationId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    match /devices/{deviceId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    match /loads/{loadId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    // Telemetry, alerts, events, health scores, maintenance records:
+    // written ONLY by the backend (Admin SDK bypasses these rules entirely),
+    // read-only from the client.
+    match /telemetry/{telemetryId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /alerts/{alertId} {
+      allow read: if isSignedIn();
+      // Allow the client to mark an alert as read, nothing else.
+      allow update: if isSignedIn() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+      allow create, delete: if false;
+    }
+
+    match /events/{eventId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /healthScores/{scoreId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /maintenance/{maintenanceId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // ML results: written ONLY by the backend (Admin SDK), read-only for signed-in clients.
+    match /learnedProfiles/{deviceId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /faultHistory/{deviceId}/events/{eventId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn();
+      allow update: if isSignedIn() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+      allow create, delete: if false;
+    }
+
+    // Relay commands: client may CREATE a command (the backend/ESP32 executes
+    // it and updates status), never delete, never fabricate a "DONE" status.
+    match /relayCommands/{commandId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() &&
+        request.resource.data.requestedBy == request.auth.uid &&
+        request.resource.data.status == 'SENT';
+      allow update, delete: if false;
+    }
+  }
+}

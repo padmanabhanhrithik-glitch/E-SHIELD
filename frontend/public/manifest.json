@@ -1,0 +1,16 @@
+{
+  "name": "E-SHIELD",
+  "short_name": "E-SHIELD",
+  "description": "Electrical safety monitoring and early-warning dashboard.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait-primary",
+  "background_color": "#F7F9FC",
+  "theme_color": "#172033",
+  "icons": [
+    { "src": "/icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
